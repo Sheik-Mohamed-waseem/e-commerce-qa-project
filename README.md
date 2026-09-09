@@ -15,6 +15,7 @@ The project was developed and executed using Visual Studio Code.
 - Application: OpenCart
 - Domain: E-Commerce
 - Application Reference: Naveen Automation Labs
+- Application URL: https://naveenautomationlabs.com/opencart/index.php?route=common/home
 - Testing Approach: Manual Testing & UI Automation Testing
 
 ---
