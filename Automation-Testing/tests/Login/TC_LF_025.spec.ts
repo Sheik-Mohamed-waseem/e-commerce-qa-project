@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
 import loginData from '../../testdata/logindata';
 
-test('TC_LF_026: Validate login functionality across different browsers', async ({ page }) => {
+test('TC_LF_025: Validate login functionality across different browsers', async ({ page }) => {
 
     const loginPage = new LoginPage(page);
 
