@@ -9,6 +9,10 @@ test('TC_ATC_001: validate adding a product to the cart from home page',async({p
 
     // Validate the success message is displaying 
     await expect(page.getByText('Success: You have added MacBook to your shopping cart! ×')).toBeVisible();
+    await page.getByText('shopping cart', { exact: true }).click();
+
+    // Validate the product is added to the cart
+    await expect(page.locator(`//tr[td[3][contains(., 'Product 16')]]//td[2]//a`)).toHaveText('MacBook');
     
 
 });

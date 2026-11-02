@@ -10,5 +10,8 @@ test('TC_ATC_010: Validate Add to Cart functionality for a product accessed thro
 
     // Validate the product is sucessfully added to the cart
     await expect(page.getByText('Success: You have added Samsung Galaxy Tab 10.1 to your shopping cart!')).toBeVisible();
+    await page.getByText('shopping cart', { exact: true }).click();
+    await expect(page.locator(`//tr[td[3][contains(., 'SAM1')]]//td[2]//a`)).toHaveText('Samsung Galaxy Tab 10.1');
+
 
 });

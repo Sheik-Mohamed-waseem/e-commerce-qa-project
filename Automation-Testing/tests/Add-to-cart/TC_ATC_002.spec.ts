@@ -7,6 +7,10 @@ await page.locator("//button[@id='button-cart']").click();
 
 // Validate the product is added to the cart
 await expect(page.locator("//div[@class='alert alert-success alert-dismissible']")).toBeVisible();
+await page.getByText('shopping cart', { exact: true }).click();
+
+// Validate the product is added to the cart
+await expect(page.locator(`//tr[td[3][contains(., 'Product 14')]]//td[2]//a`)).toHaveText('iMac');
 
 
 });

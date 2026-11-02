@@ -9,7 +9,8 @@ test('TC_ATC_007: validate adding the related product to the cart that are displ
 
     // Validate the product is sucessfully added to the cart
     await expect(page.getByText('Success: You have added iPhone to your shopping cart!')).toBeVisible();
-
+    await page.getByText('shopping cart', { exact: true }).click();
+    await expect(page.locator(`//tr[td[3][contains(., 'product 11')]]//td[2]//a`)).toHaveText('iPhone');
 
 
 });

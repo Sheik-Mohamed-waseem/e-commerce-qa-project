@@ -11,5 +11,7 @@ test('TC_ATC_005: validate add to cart functionality from top navigation menu',a
     // Validate add the product to the cart 
     await page.locator('span:has-text("ADD TO CART")').click();
     await expect(page.getByText('Success: You have added iMac to your shopping cart!')).toBeVisible();
+    await page.getByText('shopping cart', { exact: true }).click();
+    await expect(page.locator(`//tr[td[3][contains(., 'Product 14')]]//td[2]//a`)).toHaveText('iMac');
 
 });

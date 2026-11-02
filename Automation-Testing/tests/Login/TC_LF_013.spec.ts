@@ -1,23 +1,27 @@
+
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
 
-test('TC_LF_013: Validate placeholder is visible in email field and password field', async ({ page }) => {
-  const loginPage = new LoginPage(page);
-  
-  //Navigate to the application
-  await page.goto('https://naveenautomationlabs.com/opencart/index.php?route=common/home');
+test('TC_LF_013: Validate placeholders in Email and Password fields', async ({ page }) => {
 
-  // Select my account drop down menu and click on login option
-  await page.getByText('My Account').first().click();
-  await page.getByRole('link', { name: 'Login' }).click();
+    const loginPage = new LoginPage(page);
 
-  // Validate that the email and password input fields are visible and the URL is correct
-  await expect(page).toHaveURL(/route=account\/login/);
-  await expect(page.locator('#input-email')).toBeVisible();
-  await expect(page.locator('#input-password')).toBeVisible();
+    // Step 1: Navigate to Login page
+    await loginPage.navigateToLogin();
 
-  // Validate that the placeholder text is visible in the email and password input fields
-  await expect(page.locator('#input-email')).toHaveAttribute('placeholder', 'E-Mail Address');
-  await expect(page.locator('#input-password')).toHaveAttribute('placeholder', 'Password');
-  await page.close();
+    // Expected Result: Login page should be displayed
+    await expect(page).toHaveURL(/route=account\/login/);
+
+    // Step 2: Verify Email placeholder
+    const emailPlaceholder = await loginPage.getEmailPlaceholder();
+    expect(emailPlaceholder).toBe('E-Mail Address');
+
+    // Step 3: Verify Password placeholder
+    const passwordPlaceholder = await loginPage.getPasswordPlaceholder();
+    expect(passwordPlaceholder).toBe('Password');
+
+    // Step 4: Verify Email and Password fields are visible
+    expect(await loginPage.isEmailVisible()).toBeTruthy();
+    expect(await loginPage.isPasswordVisible()).toBeTruthy();
+
 });

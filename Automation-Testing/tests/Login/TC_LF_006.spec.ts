@@ -1,29 +1,30 @@
+
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
+import loginData from '../../testdata/logindata';
 
-test('TC_LF_006: validate logging into account using valid email and invalid password', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test('TC_LF_006: Validate login with valid email and invalid password', async ({ page }) => {
 
-  // Navigate to the application
-  await page.goto('https://naveenautomationlabs.com/opencart/');
+    const loginPage = new LoginPage(page);
 
-  // Navigate to the Login page through the My Account menu
-  await page.getByText('My Account').first().click();
-  await page.getByRole('link', { name: 'Login' }).click();
+    // Step 1: Navigate to Login page
+    await loginPage.navigateToLoginViaMyAccount();
 
-  // Validate that the Email field is displayed and the user is on the Login page
-  await expect(page.locator('#input-email')).toBeVisible();
-  await expect(page).toHaveURL(/route=account\/login/);
+    // Step 2: Enter valid email and invalid password
+    await loginPage.login(
+        loginData.validEmail,
+        loginData.validEmailInvalidPassword
+    );
 
-  // Enter a valid email address and an invalid password
-  await loginPage.enterEmail('tester619@gmail.com');
-  await loginPage.enterPassword('sheikwaseem');
-  await loginPage.clickLogin();
+    // Expected Result: Warning message should be displayed
+    await loginPage.waitForLoginWarning();
+    expect(await loginPage.isWarningVisible()).toBeTruthy();
 
-  // Validate that the login error message is displayed
-  await expect(page.locator('div.alert.alert-danger')).toBeVisible();
+    // Expected Result: User should remain on Login page
+    await expect(page).toHaveURL(/route=account\/login/);
 
-  // Validate that the user remains on the Login page after unsuccessful login
-  await expect(page).toHaveURL(/route=account\/login/);
-  await page.close();
+    // Step 3: Verify warning message is not empty
+    const warningText = await loginPage.getLoginWarning();
+    expect(warningText.length).toBeGreaterThan(0);
+
 });

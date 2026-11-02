@@ -18,5 +18,7 @@ test('TC_ATC_006: validate adding the product to the cart from product compare p
 
     // Validate the product is sucessfully added to the cart
     await expect(page.getByText('Success: You have added MacBook to your shopping cart!')).toBeVisible();
+    await page.getByText('shopping cart', { exact: true }).click();
+    await expect(page.locator(`//tr[td[3][contains(., 'Product 16')]]//td[2]//a`)).toHaveText('MacBook');
 
 });

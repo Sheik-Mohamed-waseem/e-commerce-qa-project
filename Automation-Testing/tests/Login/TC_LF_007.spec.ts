@@ -1,25 +1,21 @@
+
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
 
-test('TC_LF_007: validate the forgot password link is displaying and working in login page', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test('TC_LF_007: Validate Forgot Password link', async ({ page }) => {
 
-  // Navigate to the application
-  await page.goto('https://naveenautomationlabs.com/opencart/index.php?route=common/home');
+    const loginPage = new LoginPage(page);
 
-  // Navigate to the Login page through the My Account menu
-  await page.getByText('My Account').first().click();
-  await page.getByRole('link', { name: 'Login' }).click();
+    // Step 1: Navigate to Login page
+    await loginPage.navigateToLogin();
 
-  // Validate that the Forgot Password link is displayed and accessible on the Login page
-  const forgotPasswordLink = page.locator('#content').getByRole('link', { name: /forgotten password/i }).first();
-  await expect(forgotPasswordLink).toBeVisible();
+    // Step 2: Verify Forgot Password link is visible
+    await expect(page.locator('a').filter({ hasText: 'Forgotten Password' }).first()).toBeVisible();
 
-  // Click the Forgot Password link to navigate to the password recovery page
-  await forgotPasswordLink.click();
+    // Step 3: Click Forgot Password link
+    await loginPage.clickForgotPassword();
 
-  // Validate that the user is navigated to the Forgotten Password page
-  await expect(page).toHaveURL(/route=account\/forgotten/);
-  await page.close();
+    // Expected Result: Forgot Password page should be displayed
+    await expect(page).toHaveURL(/route=account\/forgotten/);
 
 });

@@ -1,28 +1,30 @@
+
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
+import loginData from '../../testdata/logindata';
 
-test('TC_LF_008: Validate logging into account using invalid email and valid password', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test('TC_LF_008: Validate login with invalid email and valid password', async ({ page }) => {
 
-  // Navigate to the application
-  await page.goto('https://naveenautomationlabs.com/opencart/');
+    const loginPage = new LoginPage(page);
 
-  // Navigate to the Login page through the My Account menu
-  await page.getByText('My Account').first().click();
-  await page.getByRole('link', { name: 'Login' }).click();
+    // Step 1: Navigate to Login page
+    await loginPage.navigateToLoginViaMyAccount();
 
-  // Validate that the Email and Password fields are displayed and the user is on the Login page
-  await expect(page.locator('#input-email')).toBeVisible();
-  await expect(page.locator('#input-password')).toBeVisible();
-  await expect(page).toHaveURL(/route=account\/login/);
+    // Step 2: Enter invalid email and valid password
+    await loginPage.login(
+        loginData.invalidEmailValidPassword,
+        loginData.validPassword
+    );
 
-  // Enter an invalid email address and valid password
-  await loginPage.enterEmail('kps0090@gmail.com');
-  await loginPage.enterPassword('tester619');
-  await loginPage.clickLogin();
+    // Expected Result: Warning message should be displayed
+    await loginPage.waitForLoginWarning();
+    expect(await loginPage.isWarningVisible()).toBeTruthy();
 
-  // Validate that the login error message is displayed and the user remains on the Login page
-  await expect(page.locator('div.alert.alert-danger')).toBeVisible();
-  await expect(page).toHaveURL(/route=account\/login/);
-  await page.close();
+    // Expected Result: User should remain on Login page
+    await expect(page).toHaveURL(/route=account\/login/);
+
+    // Step 3: Verify warning message is not empty
+    const warningText = await loginPage.getLoginWarning();
+    expect(warningText.length).toBeGreaterThan(0);
+
 });

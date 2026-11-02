@@ -1,28 +1,32 @@
-import {test,expect} from '@playwright/test';
+
+import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
-test('TC_LF_001: Validate the different ways to navigate  login page',async({page})=>{
 
-  // Navigate to the home page application
-  await page.goto('https://naveenautomationlabs.com/opencart/index.php?route=common/home');
+test('TC_LF_001: Validate different ways to navigate to Login page', async ({ page }) => {
 
-  // Select my account drop down menu and Click on login option
-  await page.locator("//a[@title='My Account']").click();
-  await page.getByRole('link',{name:'Login'}).click();
-  
-  // Validate navigated to the login page
-  await expect(page).toHaveURL('https://naveenautomationlabs.com/opencart/index.php?route=account/login');
+    const loginPage = new LoginPage(page);
 
-  // Select my account drop down menu and Click on register option
-  await page.locator("//a[@title='My Account']").click();
-  await page.getByRole('link',{name:'Register'}).first().click();
+    // Step 1: Navigate to Home page
+    await loginPage.navigateToHome();
 
-  // Navigate to the login page through right column option
-  await page.locator('div.list-group').locator('a').nth(0).click();
+    // Step 2: Click My Account and select Login
+    await loginPage.clickMyAccount();
+    await loginPage.clickLoginFromMenu();
 
-  // Validate navigated to the login page
-  await expect(page).toHaveURL('https://naveenautomationlabs.com/opencart/index.php?route=account/login');
-  await page.close();
+    // Expected Result: Login page should be displayed
+    await expect(page).toHaveURL(/route=account\/login/);
 
-  
+    // Step 3: Click My Account and select Register
+    await loginPage.clickMyAccount();
+    await loginPage.clickRegisterFromMenu();
+
+    // Expected Result: Register page should be displayed
+    await expect(page).toHaveURL(/route=account\/register/);
+
+    // Step 4: Click Login from the right column
+    await loginPage.clickLoginFromRightColumn();
+
+    // Expected Result: Login page should be displayed
+    await expect(page).toHaveURL(/route=account\/login/);
 
 });

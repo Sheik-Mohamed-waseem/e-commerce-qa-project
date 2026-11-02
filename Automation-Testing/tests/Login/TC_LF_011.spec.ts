@@ -1,46 +1,46 @@
+
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../../pages/loginpage';
+import loginData from '../../testdata/logindata';
 
-test('TC_LF_011: Validate login into account after exceeding the number of login attempts failed before session ends', async ({ page }) => {
-  const loginPage = new LoginPage(page);
+test('TC_LF_011: Validate login after seven invalid attempts', async ({ page }) => {
 
-  await page.goto('https://naveenautomationlabs.com/opencart/index.php?route=common/home');
-  // Click on "My Account" and then "Login"
-  await page.getByText('My Account').first().click();
-  await page.getByRole('link', { name: 'Login' }).click();
+    const loginPage = new LoginPage(page);
 
- // Validate that the login page is displayed(email and password fields are visible)
-  await expect(page.locator('#input-email')).toBeVisible();
-  await expect(page.locator('#input-password')).toBeVisible();
-  await expect(page).toHaveURL(/route=account\/login/);
+    // Step 1: Navigate to Login page
+    await loginPage.navigateToLoginViaMyAccount();
 
-  // Attempt to login with invalid credentials multiple times
-  const invalidEmail = 'abdulbasith0007@gmail.com';
-  const invalidPassword = 'abdulbasith66';
+    // Step 2: Enter invalid email and password
+    await loginPage.enterEmail(loginData.invalidEmail);
+    await loginPage.enterPassword(loginData.invalidPassword);
 
-  for (let attempt = 1; attempt <= 7; attempt++) {
-    await loginPage.enterEmail(invalidEmail);
-    await loginPage.enterPassword(invalidPassword);
-    await loginPage.clickLogin();
+    // Step 3: Perform seven invalid login attempts
+    for (let i = 1; i <= loginData.numberOfAttempts; i++) {
+        await loginPage.clickLogin();
+        await loginPage.waitForLoginWarning();
+    }
 
-   // Verify that the error message is displayed and the user is still on the login page
-    await expect(page.locator('div.alert.alert-danger')).toBeVisible();
-    await expect(page).toHaveURL(/route=account\/login/);
-  }
-  // Attempt to login with valid credentials after exceeding the number of failed attempts
-  await loginPage.enterEmail('tester619@gmail.com');
-  await loginPage.enterPassword('tester619');
-  await loginPage.clickLogin();
+    // Step 4: Enter valid email and password
+    await loginPage.login(
+        loginData.validEmail,
+        loginData.validPassword
+    );
 
-  // Validate that the user is either logged in successfully or still on the login page with an error message
-  const loggedIn = await page.waitForURL(/route=account\/account/, { timeout: 5000 }).then(() => true).catch(() => false);
+    // Expected Result: Check the login outcome
+    await expect(page).toHaveURL(/route=account\/(account|login)/);
 
-  if (loggedIn) {
-    await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
-    return;
-  }
- // If not logged in, validate that the user is still on the login page with an error message
-  await expect(page).toHaveURL(/route=account\/login/);
-  await expect(page.locator('div.alert.alert-danger')).toBeVisible();
-  await page.close();
+    // Step 5: Verify the result
+    if (page.url().includes('route=account/account')) {
+
+        // Login successful
+        expect(await loginPage.isLogoutVisible()).toBeTruthy();
+
+    } else {
+
+        // Login unsuccessful, possibly due to account lockout
+        await loginPage.waitForLoginWarning();
+        expect(await loginPage.isWarningVisible()).toBeTruthy();
+
+    }
+
 });

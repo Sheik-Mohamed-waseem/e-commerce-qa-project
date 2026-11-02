@@ -1,22 +1,24 @@
+
 import { test, expect } from '@playwright/test';
+import { LoginPage } from '../../pages/loginpage';
 
-test(' TC_LF_002: Validate the mandatory field label is displaying properly in login page', async ({ page }) => {
-  // Navigate to the application
-  await page.goto('https://naveenautomationlabs.com/opencart/index.php?route=common/home');
+test('TC_LF_002: Validate mandatory field labels and placeholders', async ({ page }) => {
 
-  // Navigate to the Login page through the My Account menu
-  await page.getByText('My Account').first().click();
-  await page.getByRole('link', { name: 'Login' }).click();
+    const loginPage = new LoginPage(page);
 
-  // Validate that the user is navigated to the Login page
-  await expect(page).toHaveURL(/route=account\/login/);
+    // Step 1: Navigate to Login page
+    await loginPage.navigateToLogin();
 
-  // Validate that the Email and Password fields are displayed
-  await expect(page.locator('#input-email')).toBeVisible();
-  await expect(page.locator('#input-password')).toBeVisible();
+    // Expected Result: Login page should be displayed
+    await expect(page).toHaveURL(/route=account\/login/); 
 
-  // Validate that the Email and Password fields display the expected placeholder text
-  await expect(page.locator('#input-email')).toHaveAttribute('placeholder', 'E-Mail Address');
-  await expect(page.locator('#input-password')).toHaveAttribute('placeholder', 'Password');
-  await page.close();
+
+    await expect(page.getByPlaceholder('E-Mail Address')).toBeVisible();
+    await expect(page.getByPlaceholder('Password')).toBeVisible();
+    // Step 4: Verify Email placeholder
+    expect(await loginPage.getEmailPlaceholder()).toBe('E-Mail Address');
+
+    // Step 5: Verify Password placeholder
+    expect(await loginPage.getPasswordPlaceholder()).toBe('Password');
+
 });
